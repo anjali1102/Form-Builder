@@ -38,6 +38,12 @@ function App() {
       type,
       label: type,
       required: false,
+      options:
+        type === "dropdown" || type === "radio"
+          ? ["Option1", "Option2", "Anjali"]
+          : undefined,
+      selectedOption: type === "dropdown" ? "" : undefined,
+      toggleValue: type === "toggle" ? false : undefined,
     };
     const storedTemplate =
       JSON.parse(localStorage.getItem("updatedTemplate")) || template;
@@ -143,10 +149,31 @@ function App() {
                 {field.type === "dropdown" ? (
                   <div className="space-y-2 item-center">
                     <label>Options</label>
-                    <select className="select select-bordered mt-2 ml-4">
-                      <option>Select option</option>
-                      <option>Text</option>
-                      <option>Number</option>
+                    <select
+                      className="select select-bordered mt-2 ml-4"
+                      value={field.selectedOption || ""}
+                      onChange={(e) => {
+                        const updated = produce(template, (draft) => {
+                          const target = draft.sections[0].fields.find(
+                            (f) => f.id === field.id
+                          );
+                          if (target) {
+                            target.selectedOption = e.target.value;
+                          }
+                        });
+                        setTemplate(updated);
+                        localStorage.setItem(
+                          "updatedTemplate",
+                          JSON.stringify(updated)
+                        );
+                      }}
+                    >
+                      <option value="">Select option</option>
+                      {field.options?.map((option, index) => (
+                        <option key={index} value={option}>
+                          {option}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 ) : null}
@@ -223,6 +250,8 @@ function App() {
                         if (fieldToUpdate) {
                           fieldToUpdate.label = field.label || "";
                           fieldToUpdate.helpText = field.helpText || "";
+                          fieldToUpdate.selectedOption =
+                            field.selectedOption || "";
                         }
                       });
                       setTemplate(updatedField);
