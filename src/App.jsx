@@ -11,28 +11,39 @@ import {
 } from "lucide-react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import os from "os";
+import { produce } from "immer";
 
 function App() {
-  const [template, setTemplate] = useState({
-    name: "Add Title",
-    sections: [
-      {
-        id: "section-1",
-        title: "Untitled title",
-        fields: [],
-      },
-    ],
+  const [template, setTemplate] = useState(() => {
+    const stored = JSON.parse(localStorage.getItem("updatedTemplate"));
+    return stored
+      ? stored
+      : {
+          name: "Add Title",
+          sections: [
+            {
+              id: "section-1",
+              title: "Untitled title",
+              fields: [],
+            },
+          ],
+        };
   });
+
+  // const [fieldText, setFieldText] = useState("");
+  // const [fieldHelpText, setFieldHelpText] = useState("");
   function handleAddField(type) {
-    console.log("type", type);
     const newField = {
       id: crypto.randomUUID(),
       type,
       label: type,
       required: false,
     };
-    const updatedTemplate = { ...template };
+    const storedTemplate =
+      JSON.parse(localStorage.getItem("updatedTemplate")) || template;
+    const updatedTemplate = { ...storedTemplate };
     updatedTemplate.sections[0].fields.push(newField);
+    localStorage.setItem("updatedTemplate", JSON.stringify(updatedTemplate));
     setTemplate(updatedTemplate);
   }
   return (
@@ -84,11 +95,47 @@ function App() {
                       type="text"
                       placeholder="Add field label"
                       className="input input-bordered w-full"
+                      id="fieldText"
+                      value={field.label}
+                      onChange={(e) => {
+                        console.log("e0", e.target.value);
+                        const updated = produce(template, (draft) => {
+                          const toBeUpdated = draft.sections[0].fields.find(
+                            (f) => f.id === field.id
+                          );
+                          if (toBeUpdated) {
+                            toBeUpdated.label = e.target.value;
+                          }
+                        });
+                        setTemplate(updated);
+                        localStorage.setItem(
+                          "updatedTemplate",
+                          JSON.stringify(updated)
+                        );
+                      }}
                     />
                     <input
                       type="text"
                       placeholder="Add help text"
                       className="input input-bordered w-full"
+                      id="fieldHelpText"
+                      value={field.helpText}
+                      onChange={(e) => {
+                        console.log("e", e.target.value);
+                        const updated = produce(template, (draft) => {
+                          const toBeUpdated = draft.sections[0].fields.find(
+                            (f) => f.id === field.id
+                          );
+                          if (toBeUpdated) {
+                            toBeUpdated.helpText = e.target.value;
+                          }
+                        });
+                        setTemplate(updated);
+                        localStorage.setItem(
+                          "updatedTemplate",
+                          JSON.stringify(updatedHelpText)
+                        );
+                      }}
                     />
                   </div>
                 ) : null}
@@ -165,7 +212,26 @@ function App() {
                   <button className="btn btn-ghost text-red-500 text-sm">
                     <Trash />
                   </button>
-                  <button className="btn btn-sm bg-black text-white">
+                  <button
+                    className="btn btn-sm bg-black text-white"
+                    id="save-field-btn"
+                    onClick={() => {
+                      const updatedField = produce(template, (draft) => {
+                        const fieldToUpdate = draft.sections[0].fields.find(
+                          (f) => f.id === field.id
+                        );
+                        if (fieldToUpdate) {
+                          fieldToUpdate.label = field.label || "";
+                          fieldToUpdate.helpText = field.helpText || "";
+                        }
+                      });
+                      setTemplate(updatedField);
+                      localStorage.setItem(
+                        "updatedTemplate",
+                        JSON.stringify(updatedField)
+                      );
+                    }}
+                  >
                     Done
                   </button>
                 </div>
