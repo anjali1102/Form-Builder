@@ -180,31 +180,34 @@ function App() {
 
                 {field.type === "radio" ? (
                   <div className="space-y-2 item-center flex flex-col">
-                    <div className="flex gap-2">
-                      <input
-                        type="radio"
-                        name="radio-5"
-                        className="radio radio-secondary"
-                        defaultChecked
-                      />
-                      <label htmlFor="">Option 1</label>
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="radio"
-                        name="radio-5"
-                        className="radio radio-secondary"
-                      />
-                      <label htmlFor="">Option 2</label>
-                    </div>
-                    <div className="flex gap-2">
-                      <input
-                        type="radio"
-                        name="radio-5"
-                        className="radio radio-secondary"
-                      />
-                      <label htmlFor="">Option 3</label>
-                    </div>
+                    {field.options?.map((option, index) => (
+                      <div className="flex gap-2" key={index}>
+                        <input
+                          key={index}
+                          type="radio"
+                          name={`radio-${field.id}`}
+                          value={option}
+                          className="radio radio-secondary"
+                          checked={field.selectedOption === option}
+                          onChange={(e) => {
+                            const updated = produce(template, (draft) => {
+                              const target = draft.sections[0].fields.find(
+                                (f) => f.id === field.id
+                              );
+                              if (target) {
+                                target.selectedOption = e.target.value;
+                              }
+                            });
+                            setTemplate(updated);
+                            localStorage.setItem(
+                              "updatedTemplate",
+                              JSON.stringify(updated)
+                            );
+                          }}
+                        />
+                        <label htmlFor="">{option}</label>
+                      </div>
+                    ))}
                   </div>
                 ) : null}
 
