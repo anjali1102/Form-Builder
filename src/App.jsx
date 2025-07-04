@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 import {
-  ArrowLeft,
   CheckSquare,
   Image,
   Radio,
@@ -12,6 +11,9 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import os from "os";
 import { produce } from "immer";
+import Navbar from "./Components/Navbar/Navbar";
+import Search from "./Components/Search/Search";
+import Tabs from "./Components/Tabs/Tabs";
 
 function App() {
   const [template, setTemplate] = useState(() => {
@@ -65,23 +67,7 @@ function App() {
   return (
     <>
       <div>
-        {/*  Navbar  */}
-        <div className="navbar bg-base-100 shadow-sm">
-          <div className="navbar-start">
-            <a className="btn mr-2">
-              <ArrowLeft size={12} />
-            </a>
-            Back
-          </div>
-          <div className="navbar-center hidden lg:flex"></div>
-          <div className="navbar-end">
-            <div className="flex justify-between text-center gap-2">
-              <a className="p-2">Save draft</a>
-              <a className="btn">Preview</a>
-              <a className="btn">Share</a>
-            </div>
-          </div>
-        </div>
+        <Navbar />
         {/* Main Section */}
         <main className="flex min-h-screen">
           {/* Builder Canvas */}
@@ -164,10 +150,6 @@ function App() {
                           }
                         });
                         setTemplate(updated);
-                        localStorage.setItem(
-                          "updatedTemplate",
-                          JSON.stringify(updated)
-                        );
                       }}
                     >
                       <option value="">Select option</option>
@@ -226,10 +208,6 @@ function App() {
                           }
                         });
                         setTemplate(updated);
-                        // localStorage.setItem(
-                        //   "updatedTemplate",
-                        //   JSON.stringify(updated)
-                        // );
                       }}
                     />
                   </div>
@@ -384,49 +362,8 @@ function App() {
             ))}
           </div>
           <div className="w-[340px] bg-white text-black p-4 shadow-md border-r">
-            <div className="tabs tabs-boxed mb-4">
-              <input
-                type="radio"
-                name="my_tabs_1"
-                className="tab"
-                aria-label="Field"
-                defaultChecked
-              />
-              <input
-                type="radio"
-                name="my_tabs_1"
-                className="tab"
-                aria-label="Workflow"
-              />
-              <input
-                type="radio"
-                name="my_tabs_1"
-                className="tab"
-                aria-label="Permissions"
-              />
-            </div>
-            {/* Search */}
-            <div className="mb-4">
-              <label className="input input-bordered flex items-center gap-2">
-                <svg
-                  className="h-[1em] opacity-50"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  <g
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                  </g>
-                </svg>
-                <input type="search" placeholder="Search element" />
-              </label>
-            </div>
+            <Tabs />
+            <Search />
             <div className="mb-6">
               <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
                 TEXT ELEMENTS
