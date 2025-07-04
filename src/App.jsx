@@ -30,8 +30,6 @@ function App() {
         };
   });
 
-  // const [fieldText, setFieldText] = useState("");
-  // const [fieldHelpText, setFieldHelpText] = useState("");
   function handleAddField(type) {
     const newField = {
       id: crypto.randomUUID(),
@@ -39,11 +37,13 @@ function App() {
       label: type,
       required: false,
       options:
-        type === "dropdown" || type === "radio"
+        type === "dropdown" || type === "radio" || type === "checkbox"
           ? ["Option1", "Option2", "Anjali"]
           : undefined,
       selectedOption: type === "dropdown" ? "" : undefined,
       toggleValue: type === "toggle" ? false : undefined,
+      selectedCheckbox: type === "checkbox" ? "" : undefined,
+      file: type === "uploadFile" || type === "image" ? "" : null,
     };
     const storedTemplate =
       JSON.parse(localStorage.getItem("updatedTemplate")) || template;
@@ -51,6 +51,16 @@ function App() {
     updatedTemplate.sections[0].fields.push(newField);
     localStorage.setItem("updatedTemplate", JSON.stringify(updatedTemplate));
     setTemplate(updatedTemplate);
+  }
+
+  function handleRemoveField(fieldid) {
+    const updated = produce(template, (draft) => {
+      draft.sections[0].fields = draft.sections[0].fields.filter(
+        (eachField) => eachField.id !== fieldid
+      );
+    });
+    setTemplate(updated);
+    localStorage.setItem("updatedTemplate", JSON.stringify(updated));
   }
   return (
     <>
@@ -114,10 +124,6 @@ function App() {
                           }
                         });
                         setTemplate(updated);
-                        localStorage.setItem(
-                          "updatedTemplate",
-                          JSON.stringify(updated)
-                        );
                       }}
                     />
                     <input
@@ -137,10 +143,6 @@ function App() {
                           }
                         });
                         setTemplate(updated);
-                        localStorage.setItem(
-                          "updatedTemplate",
-                          JSON.stringify(updatedHelpText)
-                        );
                       }}
                     />
                   </div>
@@ -188,21 +190,17 @@ function App() {
                           name={`radio-${field.id}`}
                           value={option}
                           className="radio radio-secondary"
-                          checked={field.selectedOption === option}
+                          checked={field.selectedRadioOption === option}
                           onChange={(e) => {
                             const updated = produce(template, (draft) => {
                               const target = draft.sections[0].fields.find(
                                 (f) => f.id === field.id
                               );
                               if (target) {
-                                target.selectedOption = e.target.value;
+                                target.selectedRadioOption = e.target.value;
                               }
                             });
                             setTemplate(updated);
-                            localStorage.setItem(
-                              "updatedTemplate",
-                              JSON.stringify(updated)
-                            );
                           }}
                         />
                         <label htmlFor="">{option}</label>
@@ -214,36 +212,144 @@ function App() {
                 {field.type === "toggle" ? (
                   <div className="flex items-center gap-2 mt-2 text-sm">
                     <span>Yes/No</span>
-                    <input type="checkbox" className="toggle toggle-sm ml-2" />
+                    <input
+                      type="checkbox"
+                      className="toggle toggle-secondary toggle-sm ml-2"
+                      checked={field.toggleValue || false}
+                      onChange={(e) => {
+                        const updated = produce(template, (draft) => {
+                          const target = draft.sections[0].fields.find(
+                            (f) => f.id === field.id
+                          );
+                          if (target) {
+                            target.toggleValue = e.target.value;
+                          }
+                        });
+                        setTemplate(updated);
+                        // localStorage.setItem(
+                        //   "updatedTemplate",
+                        //   JSON.stringify(updated)
+                        // );
+                      }}
+                    />
                   </div>
                 ) : null}
 
-                {field.type === "upload" ? (
+                {field.type === "checkbox" ? (
+                  <div className="space-y-2 item-center flex flex-col">
+                    {console.log(field)}
+                    {field.options?.map((option, index) => (
+                      <div className="flex gap-2" key={index}>
+                        <input
+                          key={index}
+                          type="checkbox"
+                          name={`checkbox-${field.id}`}
+                          value={option}
+                          className="checkbox checkbox-neutral"
+                          checked={field.selectedCheckbox === option}
+                          onChange={(e) => {
+                            const updated = produce(template, (draft) => {
+                              const target = draft.sections[0].fields.find(
+                                (f) => f.id === field.id
+                              );
+                              if (target) {
+                                target.selectedCheckbox = e.target.value;
+                              }
+                            });
+                            setTemplate(updated);
+                          }}
+                        />
+                        <label>{option}</label>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {field.type === "uploadFile" ? (
                   <>
-                    <label className="mt-2">Upload File</label>
                     <input
                       type="file"
-                      className="file-input file-input-bordered w-full mt-2"
+                      className="file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100 dark:file:bg-violet-600 dark:file:text-violet-100 dark:hover:file:bg-violet-500 ..."
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          const updated = produce(template, (draft) => {
+                            const target = draft.sections[0].fields.find(
+                              (f) => f.id === field.id
+                            );
+                            if (target) {
+                              target.file = reader.result;
+                              target.fileName = file.name;
+                            }
+                          });
+                          setTemplate(updated);
+                        };
+                        if (file) reader.readAsDataURL(file);
+                      }}
                     />
+                    {field.file && (
+                      <div className="mt-2 text-sm">
+                        Uploaded:{" "}
+                        <a
+                          href={field.file}
+                          download={field.fileName || "file"}
+                          className="link link-success"
+                        >
+                          {field.fileName || "Download File"}
+                        </a>
+                      </div>
+                    )}
                   </>
                 ) : null}
 
                 {field.type === "image" ? (
                   <>
-                    <label className="mt-2">Upload Image</label>
                     <input
                       type="file"
+                      className="file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100 dark:file:bg-violet-600 dark:file:text-violet-100 dark:hover:file:bg-violet-500 ..."
                       accept="image/*"
-                      className="file-input file-input-bordered w-full mt-2"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          const updated = produce(template, (draft) => {
+                            const target = draft.sections[0].fields.find(
+                              (f) => f.id === field.id
+                            );
+                            if (target) {
+                              target.file = reader.result;
+                              target.fileName = file.name;
+                            }
+                          });
+                          setTemplate(updated);
+                        };
+                        if (file) reader.readAsDataURL(file);
+                      }}
                     />
+                    {field.file && (
+                      <div className="mt-2 text-sm">
+                        Uploaded Image:{" "}
+                        <a
+                          href={field.file}
+                          download={field.fileName || "file"}
+                          className="link link-success"
+                        >
+                          {field.fileName || "Download Image"}
+                        </a>
+                      </div>
+                    )}
                   </>
                 ) : null}
                 <div className="mt-4 flex justify-between">
-                  <button className="btn btn-ghost text-red-500 text-sm">
+                  <button
+                    className="btn btn-ghost text-red-500 text-sm"
+                    onClick={() => handleRemoveField(field.id)}
+                  >
                     <Trash />
                   </button>
                   <button
-                    className="btn btn-sm bg-black text-white"
+                    className="btn btn-sm bg-black text-white hover:bg-gray-600 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500 active:bg-gray-700 ..."
                     id="save-field-btn"
                     onClick={() => {
                       const updatedField = produce(template, (draft) => {
@@ -255,6 +361,13 @@ function App() {
                           fieldToUpdate.helpText = field.helpText || "";
                           fieldToUpdate.selectedOption =
                             field.selectedOption || "";
+                          fieldToUpdate.selectedRadioOption =
+                            field.selectedRadioOption;
+                          fieldToUpdate.selectedOption = field.selectedOption;
+                          fieldToUpdate.toggleValue = field.toggleValue;
+                          fieldToUpdate.selectedCheckbox =
+                            field.selectedCheckbox;
+                          fieldToUpdate.file = field.file || null;
                         }
                       });
                       setTemplate(updatedField);
@@ -366,11 +479,11 @@ function App() {
                 </button>
 
                 <button
-                  onClick={() => handleAddField("dropdown")}
+                  onClick={() => handleAddField("checkbox")}
                   className="w-36 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg flex flex-col justify-center items-center shadow-sm hover:shadow-md transition"
                 >
                   <CheckSquare size={24} />
-                  <span className="mt-2 text-sm font-medium">Dropdown</span>
+                  <span className="mt-2 text-sm font-medium">Checkbox</span>
                 </button>
               </div>
             </div>
@@ -380,11 +493,11 @@ function App() {
               </p>
               <div className="flex gap-4 justify-between">
                 <button
-                  onClick={() => handleAddField("upload")}
+                  onClick={() => handleAddField("uploadFile")}
                   className="w-36 h-24 bg-gray-100 hover:bg-gray-200 rounded-lg flex flex-col justify-center items-center shadow-sm hover:shadow-md transition"
                 >
                   <Upload size={24} />
-                  <span className="mt-2 text-sm font-medium">Upload</span>
+                  <span className="mt-2 text-sm font-medium">Upload File</span>
                 </button>
                 <button
                   onClick={() => handleAddField("image")}
