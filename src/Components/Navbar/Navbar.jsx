@@ -30,7 +30,13 @@ function Navbar({ template }) {
               <button>close</button>
             </form>
           </dialog>
-          <a className="btn">Share</a>
+          <a
+            className="btn"
+            target="_blank"
+            href="https://twitter.com/intent/tweet?text=Check%20out%20this%20cool%20dynamic%20form%20builder%20by%20%40anjalii1102%20%0A&url=https%3A%2F%2Fform-builder-v2.netlify.app%2F"
+          >
+            Share
+          </a>
         </div>
       </div>
     </div>

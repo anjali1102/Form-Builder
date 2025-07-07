@@ -93,7 +93,7 @@ function PreviewForm({ template }) {
             {field.type === "toggle" && (
               <>
                 <label className="mr-4 toggle-secondary">
-                  {field.toggleValue}{" "}
+                  {String(field.toggleValue)}
                 </label>
                 <input
                   name={`toggle-preview`}
