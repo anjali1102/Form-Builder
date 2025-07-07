@@ -74,7 +74,6 @@ function PreviewForm({ template }) {
             )}
             {field.type === "checkbox" && (
               <div className="space-y-2 item-center flex flex-col">
-                {/* {console.log(field)} */}
                 {field.options?.map((option, index) => (
                   <div className="flex gap-2" key={index}>
                     <input
@@ -100,7 +99,6 @@ function PreviewForm({ template }) {
                   name={`toggle-preview`}
                   type="checkbox"
                   checked={field.toggleValue || false}
-                  //   value={field.toggleValue}
                   className="toggle toggle-sm"
                   disabled
                 />
