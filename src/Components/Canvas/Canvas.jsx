@@ -10,7 +10,7 @@ function Canvas({ fields, template, setTemplate, handleRemoveField }) {
     <div
       ref={setNodeRef}
       id="canvas-dropzone"
-      className="flex-1 p-8 bg-gray-50 min-h-screen"
+      className="flex-1 p-8 bg-gray-50 min-h-screen min-w-100"
     >
       <h2 className="text-lg font-semibold mb-4">Form Builder Area</h2>
       {fields.map((field) => (
@@ -141,7 +141,7 @@ function Canvas({ fields, template, setTemplate, handleRemoveField }) {
                       (f) => f.id === field.id
                     );
                     if (target) {
-                      target.toggleValue = e.target.value;
+                      target.toggleValue = e.target.checked;
                     }
                   });
                   setTemplate(updated);
@@ -152,7 +152,6 @@ function Canvas({ fields, template, setTemplate, handleRemoveField }) {
 
           {field.type === "checkbox" ? (
             <div className="space-y-2 item-center flex flex-col">
-              {console.log(field)}
               {field.options?.map((option, index) => (
                 <div className="flex gap-2" key={index}>
                   <input
