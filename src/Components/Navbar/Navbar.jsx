@@ -1,7 +1,9 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
+import PreviewForm from "../PreviewForm/PreviewForm";
 
-function Navbar() {
+function Navbar({ template }) {
+  console.log("@@@", template);
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -14,7 +16,20 @@ function Navbar() {
       <div className="navbar-end">
         <div className="flex justify-between text-center gap-2">
           <a className="p-2">Save draft</a>
-          <a className="btn">Preview</a>
+          <a
+            className="btn"
+            onClick={() => document.getElementById("my_modal_2").showModal()}
+          >
+            Preview
+          </a>
+          <dialog id="my_modal_2" className="modal">
+            <div className="modal-box">
+              <PreviewForm template={template} />
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
           <a className="btn">Share</a>
         </div>
       </div>

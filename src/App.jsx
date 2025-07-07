@@ -99,19 +99,23 @@ function App() {
 
   return (
     <>
-      <Navbar />
-      <main className="flex min-h-screen">
+      <Navbar template={template} />
+      <main className="flex min-h-screen flex justify-between bg-white">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <Canvas
-            fields={template.sections[0].fields}
-            template={template}
-            setTemplate={setTemplate}
-            handleRemoveField={handleRemoveField}
-          />
+          <div className="flex justify-center w-screen mt-8">
+            <div className="flex justify-between ">
+              <Canvas
+                fields={template.sections[0].fields}
+                template={template}
+                setTemplate={setTemplate}
+                handleRemoveField={handleRemoveField}
+              />
+            </div>
+          </div>
           <div className="w-[340px] bg-white text-black p-4 shadow-md border-r">
             <Tabs />
             <Search />
@@ -177,7 +181,6 @@ function App() {
               </div>
             </div>
           </div>
-
           <DragOverlay>
             {activeDragItem ? (
               <div className="w-36 h-24 bg-blue-500 text-white rounded-lg flex flex-col justify-center items-center shadow-lg cursor-grabbing opacity-80">
