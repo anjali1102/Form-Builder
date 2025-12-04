@@ -1,5 +1,4 @@
 import React from "react";
-import os from "os";
 import { Trash } from "lucide-react";
 import { produce } from "immer";
 import { useDroppable } from "@dnd-kit/core";
@@ -10,7 +9,7 @@ function Canvas({ fields, template, setTemplate, handleRemoveField }) {
     <div
       ref={setNodeRef}
       id="canvas-dropzone"
-      className="flex-1 p-8 bg-gray-50 min-h-screen min-w-100"
+      className="flex-1 p-4 md:p-8 bg-gray-50 min-h-screen w-[450px]"
     >
       <h2 className="text-lg font-semibold mb-4">Form Builder Area</h2>
       {fields.map((field) => (

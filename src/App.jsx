@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import { produce } from "immer";
 import Navbar from "./Components/Navbar/Navbar";
-import Search from "./Components/Search/Search";
-import Tabs from "./Components/Tabs/Tabs";
+
 import {
   DndContext,
   PointerSensor,
@@ -100,14 +99,14 @@ function App() {
   return (
     <>
       <Navbar template={template} />
-      <main className="flex min-h-screen flex justify-between bg-white">
+      <main className="flex min-h-screen bg-white flex-col md:flex-row">
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex justify-center w-screen mt-8">
-            <div className="flex justify-between ">
+          <div className="flex justify-center w-screen">
+            <div className="flex justify-between">
               <Canvas
                 fields={template.sections[0].fields}
                 template={template}
@@ -116,9 +115,7 @@ function App() {
               />
             </div>
           </div>
-          <div className="w-[340px] bg-white text-black p-4 shadow-md border-r">
-            <Tabs />
-            <Search />
+          <div className="w-full md:w-[260px] lg:w-[320px] bg-white text-black p-4 shadow-md border-r">
             <div className="mb-6">
               <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
                 TEXT ELEMENTS
@@ -183,7 +180,7 @@ function App() {
           </div>
           <DragOverlay>
             {activeDragItem ? (
-              <div className="w-36 h-24 bg-blue-500 text-white rounded-lg flex flex-col justify-center items-center shadow-lg cursor-grabbing opacity-80">
+              <div className="w-34 h-24 bg-blue-500 text-white rounded-lg flex flex-col justify-center items-center shadow-lg cursor-grabbing opacity-80">
                 {typeof activeDragItem.icon === "function" ? (
                   <activeDragItem.icon size={24} />
                 ) : (

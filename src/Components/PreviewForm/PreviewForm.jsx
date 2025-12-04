@@ -1,8 +1,6 @@
-import fieldset from "daisyui/components/fieldset";
 import React from "react";
 
 function PreviewForm({ template }) {
-  console.log("##", template);
   return (
     <div className="flex-1 p-8 bg-white border-l">
       <h2 className="text-lg font-semibold mb-4">Form Preview</h2>
